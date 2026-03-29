@@ -1,9 +1,7 @@
 name: Train Hyper ZSC
 
 on:
-  workflow_dispatch:   # Manual trigger
-  # schedule:
-  #   - cron: '0 2 * * *'   # Optional: daily at 2 AM UTC
+  workflow_dispatch:
 
 jobs:
   train:
@@ -18,17 +16,20 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run ZSC Training Script
         run: python zsc_train.py
         env:
-          HF_HUB_DISABLE_SYMLINKS_WARNING: 1   # Suppress warnings
+          HF_HUB_DISABLE_SYMLINKS_WARNING: "1"
+          TRANSFORMERS_NO_ADVISORY_WARNINGS: "1"
 
-      - name: Upload trained model as artifact
+      - name: Upload trained model
         uses: actions/upload-artifact@v4
         with:
           name: hyper-zsc-model
